@@ -1,6 +1,8 @@
 # swetestssn - Swdish test social security numbers
 
-[![.NET Core CI](https://github.com/ferenyl/SwedishTestSsn/actions/workflows/dotnet.yaml/badge.svg?branch=main)](https://github.com/ferenyl/SwedishTestSsn/actions/workflows/dotnet.yaml) ![NuGet Version](https://img.shields.io/nuget/v/SwedishTestSsn?style=flat)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/ferenyl/SwedishTestSsn/dotnet.yaml?branch=main&style=for-the-badge)
+![NuGet Version](https://img.shields.io/nuget/v/SwedishTestSsn?style=for-the-badge)
+
 
 
 Get test social security numbers from Skatteverket.
