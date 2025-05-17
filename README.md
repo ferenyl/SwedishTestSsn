@@ -1,5 +1,8 @@
 # swetestssn - Swdish test social security numbers
 
+[![.NET Core CI](https://github.com/ferenyl/SwedishTestSsn/actions/workflows/dotnet.yaml/badge.svg?branch=main)](https://github.com/ferenyl/SwedishTestSsn/actions/workflows/dotnet.yaml) ![NuGet Version](https://img.shields.io/nuget/v/SwedishTestSsn?style=flat)
+
+
 Get test social security numbers from Skatteverket.
 You can use these as approved test data
 
