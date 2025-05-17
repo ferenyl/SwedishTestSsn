@@ -1,8 +1,17 @@
 # swetestssn - Swdish test social security numbers
 
-Get test social security numbers from Skatteverket. You can use these as approved test data
+Get test social security numbers from Skatteverket.
+You can use these as approved test data
 
-Usage
+You can use Regular expressions for pattern
+this will get you 10 results of ssn that are in the year 1988 and on the 14th every month:
+
+```
+swetestssn "^1988[0-9][0-9]14" -l 10
+```
+
+## Usage
+
     swetestssn [Pattern] [options]
 
 ARGUMENTS:

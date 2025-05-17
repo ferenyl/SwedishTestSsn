@@ -1,5 +1,4 @@
 ﻿using Spectre.Console.Cli;
-using Spectre.Console.Cli.Help;
 
 var app = new CommandApp<SwedishTestSsn.TestSsnCommand>();
 
