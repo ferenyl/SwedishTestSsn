@@ -2,10 +2,38 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFrameworks>net9.0;net8.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>swetestssn</ToolCommandName>
+    <PackageOutputPath>./nupkg</PackageOutputPath>
+    <Authors>Fernyl</Authors>
+    <Title>Swetestssn: Swedish test social security numbers</Title>
+    <RepositoryUrl>https://github.com/ferenyl/SwedishTestSsn.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>Swedish test social security numbers; Skatteverket; The Swedish Tax Agency</PackageTags>
+    <PackageReleaseNotes>https://github.com/ferenyl/SwedishTestSsn/releases</PackageReleaseNotes>
+    <PackageId>$(AssemblyName)</PackageId>
+    <Description>Get Swedish social securitynumbers for testing. They are not used for any real person. This is using their public API</Description>
+    <PackageProjectUrl>https://github.com/ferenyl/SwedishTestSsn</PackageProjectUrl>
+    <AssemblyVersion>0.1.0</AssemblyVersion>
+    <FileVersion>$(AssemblyVersion)</FileVersion>
+    <Version>$(AssemblyVersion)</Version>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Spectre.Console" Version="0.50.0" />
