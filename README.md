@@ -20,13 +20,19 @@ swetestssn "^1988[0-9][0-9]14" -l 10
     swetestssn [Pattern] [options]
 
 ARGUMENTS:
+
     [Pattern]    Test social security number. Regular expressions may be used
 
 OPTIONS:
+
                     DEFAULT
+                    
     -h, --help                 Prints help information
+    
     -l, --limit     100
+    
     -o, --offset    0
+    
         --json                 output as json
 
 COMMANDS:
