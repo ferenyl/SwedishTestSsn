@@ -3,7 +3,7 @@
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/ferenyl/SwedishTestSsn/dotnet.yaml?branch=main&style=for-the-badge)
 ![NuGet Version](https://img.shields.io/nuget/v/SwedishTestSsn?style=for-the-badge)
 
-
+Rust version: [swedish_test_ssn](https://github.com/ferenyl/swedish_test_ssn)
 
 Get test social security numbers from Skatteverket.
 You can use these as approved test data
@@ -26,14 +26,14 @@ ARGUMENTS:
 OPTIONS:
 
                     DEFAULT
-                    
+
     -h, --help                 Prints help information
-    
+
     -l, --limit     100
-    
+
     -o, --offset    0
-    
+
         --json                 output as json
 
 COMMANDS:
-    swetestssn    Get swedish test social security numbers from The Swedish Tax Agency (Skatteverket). Using their publi API
+swetestssn Get swedish test social security numbers from The Swedish Tax Agency (Skatteverket). Using their publi API
