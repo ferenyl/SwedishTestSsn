@@ -1,7 +1,7 @@
 # swetestssn - Swdish test social security numbers
 
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/ferenyl/SwedishTestSsn/dotnet.yaml?branch=main&style=for-the-badge)
-![NuGet Version](https://img.shields.io/nuget/v/SwedishTestSsn?style=for-the-badge)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/ferenyl/SwedishTestSsn/dotnet.yaml?branch=main&style=for-the-badge)](https://github.com/ferenyl/SwedishTestSsn/actions/workflows/dotnet.yaml)
+[![NuGet Version](https://img.shields.io/nuget/v/SwedishTestSsn?style=for-the-badge)](https://www.nuget.org/packages/SwedishTestSsn/)
 
 Rust version: [swedish_test_ssn](https://github.com/ferenyl/swedish_test_ssn)
 
