@@ -1,15 +1,19 @@
 using Spectre.Console.Cli;
 using Spectre.Console;
-using Spectre.Console.Json;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using System.Collections.Immutable;
 
 namespace SwedishTestSsn;
 
 internal sealed class TestSsnCommand : AsyncCommand<TestSsnCommand.Settings>
 {
+    private readonly JsonSerializerOptions _jsonDeserializeSettings;
+    private readonly JsonSerializerOptions _jsonSerializeSettings;
+    private readonly HttpClient _client;
+
     public sealed class Settings : CommandSettings
     {
         [Description("Test social security number. Regular expressions may be used")]
@@ -31,12 +35,31 @@ internal sealed class TestSsnCommand : AsyncCommand<TestSsnCommand.Settings>
         public bool Json { get; init; } = false;
     }
 
-    [Description("testar beskrivning")]
-    public override async Task<int> ExecuteAsync([NotNull] CommandContext context, [NotNull] Settings settings)
+    public TestSsnCommand() : base()
+    {
+        _jsonDeserializeSettings = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
+        _jsonSerializeSettings = new JsonSerializerOptions
+        {
+            WriteIndented = true
+        };
+
+        _client = new();
+        _client.DefaultRequestHeaders.Accept.Clear();
+        _client.DefaultRequestHeaders.Accept.Add(
+            new MediaTypeWithQualityHeaderValue("application/json"));
+    }
+
+    public override async Task<int> ExecuteAsync(
+        [NotNull] CommandContext context,
+        [NotNull] Settings settings)
     {
         var result = await GetData(settings);
 
-        if (result is null)
+        if (result.Length == 0)
             return 1;
 
         if (settings.Json)
@@ -51,38 +74,39 @@ internal sealed class TestSsnCommand : AsyncCommand<TestSsnCommand.Settings>
         return 0;
     }
 
-    private static void PrintText(Result result)
+    private static void PrintText(ImmutableArray<string> result)
     {
-        foreach (var item in result.Results)
+        foreach (var item in result.AsSpan())
         {
-            Console.WriteLine(item.Testpersonnummer);
+            Console.WriteLine(item);
         }
     }
 
-    private static void PrintJson(Result result)
+    private void PrintJson(ImmutableArray<string> result)
     {
-        var items = result.Results.Select(x => x.Testpersonnummer);
-        var json = JsonSerializer.Serialize(items);
-        var jsonContent = new JsonText(json);
-
-        AnsiConsole.Write(jsonContent);
+        var json = JsonSerializer.Serialize(result, _jsonSerializeSettings);
+        Console.WriteLine(json);
     }
 
-    private static async Task<Result?> GetData(Settings settings)
+    private async Task<ImmutableArray<string>> GetData(Settings settings)
     {
-        using HttpClient client = new();
-        client.DefaultRequestHeaders.Accept.Clear();
-        client.DefaultRequestHeaders.Accept.Add(
-          new MediaTypeWithQualityHeaderValue("application/json"));
-        var data = await client.GetStringAsync(
-            $"https://skatteverket.entryscape.net/rowstore/dataset/b4de7df7-63c0-4e7e-bb59-1f156a591763?testpersonnummer={settings.Pattern}&_limit={settings.Limit}&_offset={settings.Offset}");
-        var jsonSettings = new JsonSerializerOptions()
+        try
         {
-            PropertyNameCaseInsensitive = true
-        };
-
-        var result = JsonSerializer.Deserialize<Result>(data, jsonSettings);
-
-        return result;
+            var url =
+                $"https://skatteverket.entryscape.net/rowstore/dataset/b4de7df7-63c0-4e7e-bb59-1f156a591763" +
+                $"?testpersonnummer={settings.Pattern}" +
+                $"&_limit={settings.Limit}" +
+                $"&_offset={settings.Offset}";
+            var response = await _client.GetStringAsync(url).ConfigureAwait(false);
+            var data = JsonSerializer.Deserialize<Result>(response, _jsonDeserializeSettings);
+            if (data is null || data.Results.Length == 0)
+                return [];
+            return [.. data.Results.Select(x => x.Testpersonnummer)];
+        }
+        catch (Exception)
+        {
+            AnsiConsole.MarkupLine($"[red]Error with skatteverket api[/]");
+            return [];
+        }
     }
 }
