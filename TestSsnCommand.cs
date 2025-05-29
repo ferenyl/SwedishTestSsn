@@ -60,7 +60,10 @@ internal sealed class TestSsnCommand : AsyncCommand<TestSsnCommand.Settings>
         var result = await GetData(settings);
 
         if (result.Length == 0)
+        {
+            AnsiConsole.MarkupLine($"[red]No result for pattern: {settings.Pattern}[/]");
             return 1;
+        }
 
         if (settings.Json)
         {
@@ -101,6 +104,7 @@ internal sealed class TestSsnCommand : AsyncCommand<TestSsnCommand.Settings>
             var data = JsonSerializer.Deserialize<Result>(response, _jsonDeserializeSettings);
             if (data is null || data.Results.Length == 0)
                 return [];
+
             return [.. data.Results.Select(x => x.Testpersonnummer)];
         }
         catch (Exception)
