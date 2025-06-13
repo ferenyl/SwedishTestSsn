@@ -11,7 +11,6 @@ app.Configure(config =>
       .WithExample("swetestssn", "^1988.*", "--limit", "10")
       .WithExample("swetestssn", "^198807.*", "--limit", "10", "--json")
       .WithExample("swetestssn", "^1988.*", "--limit", "10", "--offset", "10");
-
 });
 
 return app.Run(args);

@@ -5,14 +5,15 @@ using System.Diagnostics.CodeAnalysis;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Collections.Immutable;
+using SwedishTestSsn.Core;
 
 namespace SwedishTestSsn;
 
 internal sealed class TestSsnCommand : AsyncCommand<TestSsnCommand.Settings>
 {
-    private readonly JsonSerializerOptions _jsonDeserializeSettings;
     private readonly JsonSerializerOptions _jsonSerializeSettings;
     private readonly HttpClient _client;
+    private readonly Client _ssnClient;
 
     public sealed class Settings : CommandSettings
     {
@@ -37,10 +38,7 @@ internal sealed class TestSsnCommand : AsyncCommand<TestSsnCommand.Settings>
 
     public TestSsnCommand() : base()
     {
-        _jsonDeserializeSettings = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        };
+        
 
         _jsonSerializeSettings = new JsonSerializerOptions
         {
@@ -51,6 +49,8 @@ internal sealed class TestSsnCommand : AsyncCommand<TestSsnCommand.Settings>
         _client.DefaultRequestHeaders.Accept.Clear();
         _client.DefaultRequestHeaders.Accept.Add(
             new MediaTypeWithQualityHeaderValue("application/json"));
+
+        _ssnClient = new Client(_client);
     }
 
     public override async Task<int> ExecuteAsync(
@@ -95,17 +95,11 @@ internal sealed class TestSsnCommand : AsyncCommand<TestSsnCommand.Settings>
     {
         try
         {
-            var url =
-                $"https://skatteverket.entryscape.net/rowstore/dataset/b4de7df7-63c0-4e7e-bb59-1f156a591763" +
-                $"?testpersonnummer={settings.Pattern}" +
-                $"&_limit={settings.Limit}" +
-                $"&_offset={settings.Offset}";
-            var response = await _client.GetStringAsync(url).ConfigureAwait(false);
-            var data = JsonSerializer.Deserialize<Result>(response, _jsonDeserializeSettings);
-            if (data is null || data.Results.Length == 0)
-                return [];
+            ImmutableArray<string> data = await _ssnClient
+                .GetTestSsns(settings.Pattern, settings.Limit, settings.Offset)
+                .ConfigureAwait(false);
 
-            return [.. data.Results.Select(x => x.Testpersonnummer)];
+            return data;
         }
         catch (Exception)
         {

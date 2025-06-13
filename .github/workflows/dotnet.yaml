@@ -27,7 +27,12 @@ jobs:
         run: dotnet restore
 
       - name: Build
-        run: dotnet build --no-restore
+        run: dotnet build --configuration Release  --no-restore
+
+      - name: Run SwedishTestSsn.Core.Test exe
+        run: |
+          chmod +x ./src/SwedishTestSsn.Core.Test/bin/Release/net9.0/SwedishTestSsn.Core.Test
+          ./src/SwedishTestSsn.Core.Test/bin/Release/net9.0/SwedishTestSsn.Core.Test
 
       - name: Get version
         id: get_version
@@ -38,11 +43,11 @@ jobs:
         env:
           NEW_VERSION: ${{ steps.get_version.outputs.NEW_VERSION }}
         run: |
-          sed -i "s/<AssemblyVersion>.*<\/AssemblyVersion>/<AssemblyVersion>$NEW_VERSION<\/AssemblyVersion>/g" ./SwedishTestSsn.csproj
+          sed -i "s/<AssemblyVersion>.*<\/AssemblyVersion>/<AssemblyVersion>$NEW_VERSION<\/AssemblyVersion>/g" ./src/SwedishTestSsn/SwedishTestSsn.csproj
         if: startsWith(github.ref, 'refs/tags/v')
 
       - name: Pack
-        run: dotnet pack --configuration Release --output ./artifacts
+        run: dotnet pack src/SwedishTestSsn/SwedishTestSsn.csproj --configuration Release --output ./artifacts
         if: startsWith(github.ref, 'refs/tags/v')
 
       - name: Get NuGet package name
