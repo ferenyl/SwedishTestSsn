@@ -53,29 +53,7 @@ internal sealed class TestSsnCommand : AsyncCommand<TestSsnCommand.Settings>
         _ssnClient = new Client(_client);
     }
 
-    public override async Task<int> ExecuteAsync(
-        [NotNull] CommandContext context,
-        [NotNull] Settings settings)
-    {
-        var result = await GetData(settings);
-
-        if (result.Length == 0)
-        {
-            AnsiConsole.MarkupLine($"[red]No result for pattern: {settings.Pattern}[/]");
-            return 1;
-        }
-
-        if (settings.Json)
-        {
-            PrintJson(result);
-        }
-        else
-        {
-            PrintText(result);
-        }
-
-        return 0;
-    }
+   
 
     private static void PrintText(ImmutableArray<string> result)
     {
@@ -106,5 +84,27 @@ internal sealed class TestSsnCommand : AsyncCommand<TestSsnCommand.Settings>
             AnsiConsole.MarkupLine($"[red]Error with skatteverket api[/]");
             return [];
         }
+    }
+
+    public override async Task<int> ExecuteAsync(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    {
+        var result = await GetData(settings);
+
+        if (result.Length == 0)
+        {
+            AnsiConsole.MarkupLine($"[red]No result for pattern: {settings.Pattern}[/]");
+            return 1;
+        }
+
+        if (settings.Json)
+        {
+            PrintJson(result);
+        }
+        else
+        {
+            PrintText(result);
+        }
+
+        return 0;
     }
 }
