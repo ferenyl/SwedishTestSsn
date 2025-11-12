@@ -21,7 +21,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: 10.0.x
 
       - name: Install dependencies
         run: dotnet restore
@@ -31,8 +31,8 @@ jobs:
 
       - name: Run SwedishTestSsn.Core.Test exe
         run: |
-          chmod +x ./src/SwedishTestSsn.Core.Test/bin/Release/net9.0/SwedishTestSsn.Core.Test
-          ./src/SwedishTestSsn.Core.Test/bin/Release/net9.0/SwedishTestSsn.Core.Test
+          chmod +x ./src/SwedishTestSsn.Core.Test/bin/Release/net10.0/SwedishTestSsn.Core.Test
+          ./src/SwedishTestSsn.Core.Test/bin/Release/net10.0/SwedishTestSsn.Core.Test
 
       - name: Get version
         id: get_version
