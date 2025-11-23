@@ -38,7 +38,7 @@ internal sealed class TestSsnCommand : AsyncCommand<TestSsnCommand.Settings>
 
     public TestSsnCommand() : base()
     {
-        
+
 
         _jsonSerializeSettings = new JsonSerializerOptions
         {
@@ -53,7 +53,7 @@ internal sealed class TestSsnCommand : AsyncCommand<TestSsnCommand.Settings>
         _ssnClient = new Client(_client);
     }
 
-   
+
 
     private static void PrintText(ImmutableArray<string> result)
     {
