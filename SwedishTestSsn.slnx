@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/Build/">
+    <File Path=".github/workflows/dotnet.yaml" />
+  </Folder>
+  <Project Path="src/SwedishTestSsn.Core.Test/SwedishTestSsn.Core.Test.csproj" />
+  <Project Path="src/SwedishTestSsn.Core/SwedishTestSsn.Core.csproj" />
+  <Project Path="src/SwedishTestSsn/SwedishTestSsn.csproj" />
+</Solution>
