@@ -12,7 +12,6 @@ namespace SwedishTestSsn;
 internal sealed class TestSsnCommand : AsyncCommand<TestSsnCommand.Settings>
 {
     private readonly JsonSerializerOptions _jsonSerializeSettings;
-    private readonly HttpClient _client;
     private readonly Client _ssnClient;
 
     public sealed class Settings : CommandSettings
@@ -38,19 +37,17 @@ internal sealed class TestSsnCommand : AsyncCommand<TestSsnCommand.Settings>
 
     public TestSsnCommand() : base()
     {
-
-
         _jsonSerializeSettings = new JsonSerializerOptions
         {
             WriteIndented = true
         };
 
-        _client = new();
-        _client.DefaultRequestHeaders.Accept.Clear();
-        _client.DefaultRequestHeaders.Accept.Add(
+        HttpClient client = new();
+        client.DefaultRequestHeaders.Accept.Clear();
+        client.DefaultRequestHeaders.Accept.Add(
             new MediaTypeWithQualityHeaderValue("application/json"));
 
-        _ssnClient = new Client(_client);
+        _ssnClient = new Client(client);
     }
 
 
