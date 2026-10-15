@@ -4,10 +4,10 @@ updates:
   - package-ecosystem: "nuget"
     directory: "/" # Scan the whole repo for .csproj and NuGet manifests
     schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "03:00"
-      timezone: "Europe/Stockholm"
+      interval: weekly
+      day: wednesday
+      time: "05:00"
+      timezone: Europe/Stockholm
     target-branch: "main"
     open-pull-requests-limit: 10
     rebase-strategy: "auto"
@@ -20,20 +20,17 @@ updates:
       - "dependencies"
       - "nuget"
     groups:
-      minor-and-patch:
-        applies-to: "version-updates"
-        update-types:
-          - "minor"
-          - "patch"
+      nuget:
+        patterns: ["*"]
 
   # Keep GitHub Actions used in workflows up to date
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "03:15"
-      timezone: "Europe/Stockholm"
+      interval: weekly
+      day: wednesday
+      time: "05:00"
+      timezone: Europe/Stockholm
     target-branch: "main"
     open-pull-requests-limit: 5
     rebase-strategy: "auto"
@@ -45,3 +42,6 @@ updates:
     labels:
       - "dependencies"
       - "github-actions"
+    groups:
+      github-actions:
+        patterns: ["*"]
