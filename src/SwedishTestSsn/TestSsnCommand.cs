@@ -2,17 +2,16 @@ using Spectre.Console.Cli;
 using Spectre.Console;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Collections.Immutable;
-using SwedishTestSsn.Core;
+using SwedishTestSsn.Client;
 
 namespace SwedishTestSsn;
 
 internal sealed class TestSsnCommand : AsyncCommand<TestSsnCommand.Settings>
 {
     private readonly JsonSerializerOptions _jsonSerializeSettings;
-    private readonly Client _ssnClient;
+    private readonly ITestSsnClient _ssnClient;
 
     public sealed class Settings : CommandSettings
     {
@@ -43,11 +42,9 @@ internal sealed class TestSsnCommand : AsyncCommand<TestSsnCommand.Settings>
         };
 
         HttpClient client = new();
-        client.DefaultRequestHeaders.Accept.Clear();
-        client.DefaultRequestHeaders.Accept.Add(
-            new MediaTypeWithQualityHeaderValue("application/json"));
+        TestSsnClient.Configure(client);
 
-        _ssnClient = new Client(client);
+        _ssnClient = new TestSsnClient(client);
     }
 
 
@@ -66,26 +63,19 @@ internal sealed class TestSsnCommand : AsyncCommand<TestSsnCommand.Settings>
         Console.WriteLine(json);
     }
 
-    private async Task<ImmutableArray<string>> GetData(Settings settings)
-    {
-        try
-        {
-            ImmutableArray<string> data = await _ssnClient
-                .GetTestSsns(settings.Pattern, settings.Limit, settings.Offset)
-                .ConfigureAwait(false);
-
-            return data;
-        }
-        catch (Exception)
-        {
-            AnsiConsole.MarkupLine($"[red]Error with skatteverket api[/]");
-            return [];
-        }
-    }
-
     public override async Task<int> ExecuteAsync(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
-        var result = await GetData(settings);
+        var response = await _ssnClient
+            .GetTestSsns(settings.Pattern, settings.Limit, settings.Offset, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (!response.IsSuccess)
+        {
+            AnsiConsole.MarkupLineInterpolated($"[red]Error with skatteverket api: {response.Error.Message}[/]");
+            return 1;
+        }
+
+        var result = response.Value;
 
         if (result.Length == 0)
         {

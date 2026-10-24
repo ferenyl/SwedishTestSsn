@@ -1,8 +1,11 @@
 # swetestssn - Swdish test social security numbers
 
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/ferenyl/SwedishTestSsn/dotnet.yaml?branch=main&style=for-the-badge)](https://github.com/ferenyl/SwedishTestSsn/actions/workflows/dotnet.yaml)
-[![NuGet Version](https://img.shields.io/nuget/v/SwedishTestSsn?style=for-the-badge)](https://www.nuget.org/packages/SwedishTestSsn/)
-[![NuGet Downloads](https://img.shields.io/nuget/dt/SwedishTestSsn?style=for-the-badge)](https://www.nuget.org/packages/SwedishTestSsn/)
+[![NuGet Version](https://img.shields.io/nuget/v/SwedishTestSsn?style=for-the-badge&label=SwedishTestSsn)](https://www.nuget.org/packages/SwedishTestSsn/)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/SwedishTestSsn?style=for-the-badge&label=downloads)](https://www.nuget.org/packages/SwedishTestSsn/)
+
+[![NuGet Version](https://img.shields.io/nuget/v/SwedishTestSsn.Client?style=for-the-badge&label=SwedishTestSsn.Client)](https://www.nuget.org/packages/SwedishTestSsn.Client/)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/SwedishTestSsn.Client?style=for-the-badge&label=downloads)](https://www.nuget.org/packages/SwedishTestSsn.Client/)
 
 Rust version: [swedish_test_ssn](https://github.com/ferenyl/swedish_test_ssn)
 
@@ -39,4 +42,21 @@ OPTIONS:
 
 COMMANDS:
     swetestssn    Get swedish test social security numbers from The Swedish Tax Agency (Skatteverket). Using their publi API
+```
+
+## Library
+
+```bash
+dotnet add package SwedishTestSsn.Client
+```
+
+```csharp
+services.AddSwedishTestSsn();
+
+// inject ITestSsnClient
+Result<ImmutableArray<string>> result = await client.GetTestSsns("^1988", limit: 10, offset: 0);
+if (result.IsSuccess)
+{
+    // result.Value
+}
 ```

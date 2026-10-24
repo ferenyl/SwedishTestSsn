@@ -40,6 +40,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\SwedishTestSsn.Core\SwedishTestSsn.Core.csproj" />
+    <ProjectReference Include="..\SwedishTestSsn.Client\SwedishTestSsn.Client.csproj" />
   </ItemGroup>
 </Project>
