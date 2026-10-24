@@ -6,8 +6,8 @@ name: .NET Core CI
 on:
   push:
     branches: [main]
-    tags:
-      - "v*"
+  release:
+    types: [published]
   pull_request:
     branches: [main]
 
@@ -15,7 +15,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # create release
+      contents: write # update release
+      pull-requests: read # changelog
       id-token: write # nuget trusted publishing
 
     steps:
@@ -53,27 +54,20 @@ jobs:
         run: dotnet pack SwedishTestSsn.slnx --configuration Release --output ./artifacts
         if: startsWith(github.ref, 'refs/tags/v')
 
-      - name: Generate release notes
-        id: release_notes
-        run: |
-          # Get commit messages since last tag
-          RELEASE_NOTES="$(git log $(git describe --tags --abbrev=0)..HEAD --pretty=format:"- %s")"
-
-          # Set output
-          echo  "NOTES=$RELEASE_NOTES >> $GITHUB_OUTPUT"
+      - name: Build changelog
+        id: changelog
+        uses: mikepenz/release-changelog-builder-action@v6
+        with:
+          configuration: .github/changelog-config.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: startsWith(github.ref, 'refs/tags/v')
 
-      - name: create release
-        uses: ncipollo/release-action@v1.21.0
+      - name: Update release
+        uses: softprops/action-gh-release@v3
         with:
-          artifacts: "./artifacts/*.nupkg"
-          body: ${{ steps.release_notes.outputs.NOTES }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag: v${{ steps.get_version.outputs.NEW_VERSION }}
-          prerelease: false
-          draft: false
-          name: Release v${{ steps.get_version.outputs.NEW_VERSION }}
-          generateReleaseNotes: true
+          body: ${{ steps.changelog.outputs.changelog }}
+          files: ./artifacts/*.nupkg
         if: startsWith(github.ref, 'refs/tags/v')
 
       - name: NuGet login

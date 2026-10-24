@@ -1,0 +1,26 @@
+{
+  "categories": [
+    {
+      "title": "## 💥 Breaking changes",
+      "rules": [{ "pattern": "^\\w+(\\(.*\\))?!:", "on_property": "title" }]
+    },
+    {
+      "title": "## 🚀 Features",
+      "rules": [{ "pattern": "^feat(\\(.*\\))?:", "on_property": "title" }]
+    },
+    {
+      "title": "## 🐛 Fixes",
+      "rules": [{ "pattern": "^fix(\\(.*\\))?:", "on_property": "title" }]
+    },
+    {
+      "title": "## 📦 Dependencies",
+      "labels": ["dependencies"],
+      "collapsed": true
+    }
+  ],
+  "ignore_labels": ["ignore"],
+  "template": "#{{CHANGELOG}}\n\n## 🧹 Other\n\n#{{UNCATEGORIZED}}\n\n**Full changelog:** #{{RELEASE_DIFF}}",
+  "pr_template": "- #{{TITLE}} (##{{NUMBER}}) by @#{{AUTHOR}}",
+  "empty_template": "- No changes",
+  "sort": { "order": "ASC", "on_property": "mergedAt" }
+}
