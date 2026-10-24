@@ -14,6 +14,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # create release
+      id-token: write # nuget trusted publishing
 
     steps:
       - uses: actions/checkout@v7
@@ -29,10 +32,10 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release  --no-restore
 
-      - name: Run SwedishTestSsn.Core.Test exe
+      - name: Run SwedishTestSsn.Client.Test exe
         run: |
-          chmod +x ./src/SwedishTestSsn.Core.Test/bin/Release/net10.0/SwedishTestSsn.Core.Test
-          ./src/SwedishTestSsn.Core.Test/bin/Release/net10.0/SwedishTestSsn.Core.Test
+          chmod +x ./src/SwedishTestSsn.Client.Test/bin/Release/net10.0/SwedishTestSsn.Client.Test
+          ./src/SwedishTestSsn.Client.Test/bin/Release/net10.0/SwedishTestSsn.Client.Test
 
       - name: Get version
         id: get_version
@@ -43,16 +46,11 @@ jobs:
         env:
           NEW_VERSION: ${{ steps.get_version.outputs.NEW_VERSION }}
         run: |
-          sed -i "s/<AssemblyVersion>.*<\/AssemblyVersion>/<AssemblyVersion>$NEW_VERSION<\/AssemblyVersion>/g" ./src/SwedishTestSsn/SwedishTestSsn.csproj
+          sed -i "s/<AssemblyVersion>.*<\/AssemblyVersion>/<AssemblyVersion>$NEW_VERSION<\/AssemblyVersion>/g" ./src/SwedishTestSsn/SwedishTestSsn.csproj ./src/SwedishTestSsn.Client/SwedishTestSsn.Client.csproj
         if: startsWith(github.ref, 'refs/tags/v')
 
       - name: Pack
-        run: dotnet pack src/SwedishTestSsn/SwedishTestSsn.csproj --configuration Release --output ./artifacts
-        if: startsWith(github.ref, 'refs/tags/v')
-
-      - name: Get NuGet package name
-        id: pkg
-        run: echo "PACKAGENAME=$(basename $(find ./artifacts -name '*.nupkg')) >> $GITHUB_OUTPUT"
+        run: dotnet pack SwedishTestSsn.slnx --configuration Release --output ./artifacts
         if: startsWith(github.ref, 'refs/tags/v')
 
       - name: Generate release notes
@@ -78,6 +76,13 @@ jobs:
           generateReleaseNotes: true
         if: startsWith(github.ref, 'refs/tags/v')
 
+      - name: NuGet login
+        id: nuget_login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ secrets.NUGET_USER }}
+        if: startsWith(github.ref, 'refs/tags/v')
+
       - name: Push
-        run: dotnet nuget push "./artifacts/*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+        run: dotnet nuget push "./artifacts/*.nupkg" --api-key ${{ steps.nuget_login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
         if: startsWith(github.ref, 'refs/tags/v')

@@ -4,7 +4,7 @@ var app = new CommandApp<SwedishTestSsn.TestSsnCommand>();
 
 app.Configure(config =>
 {
-    config.SetHelpProvider(new CustomHelpProvider(config.Settings));
+    config.SetHelpProvider(new SwedishTestSsn.CustomHelpProvider(config.Settings));
 
     config.AddCommand<SwedishTestSsn.TestSsnCommand>("swetestssn")
       .WithDescription("Get swedish test social security numbers from The Swedish Tax Agency (Skatteverket). Using their publi API")

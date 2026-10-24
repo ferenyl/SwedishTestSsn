@@ -3,15 +3,15 @@ using Moq.Protected;
 using System.Collections.Immutable;
 using System.Net;
 
-namespace SwedishTestSsn.Core.Test;
+namespace SwedishTestSsn.Client.Test;
 
-public class ClientTests
+public class TestSsnClientTests
 {
     [Fact]
     public async Task ReturnSingle()
     {
         // Din JSON som du vill returnera
-        var json = "{\"ResultCount\":1,\"Offset\":0,\"Limit\":1,\"QueryTime\":100,\"Next\":\"\",\"Results\":[{\"Testpersonnummer\":\"199001011234\"}]}";
+        const string json = "{\"ResultCount\":1,\"Offset\":0,\"Limit\":1,\"QueryTime\":100,\"Next\":\"\",\"Results\":[{\"Testpersonnummer\":\"199001011234\"}]}";
 
         // Mocka HttpMessageHandler
         var handlerMock = new Mock<HttpMessageHandler>();
@@ -31,24 +31,18 @@ public class ClientTests
         // Skapa HttpClient med mockad handler
         var httpClient = new HttpClient(handlerMock.Object);
 
-        // Mocka IHttpClientFactory
-        var httpClientFactoryMock = new Mock<IHttpClientFactory>();
-        httpClientFactoryMock
-            .Setup(f => f.CreateClient(It.IsAny<string>()))
-            .Returns(httpClient);
+        var sut = new TestSsnClient(httpClient);
 
-        var sut = new Client(httpClientFactoryMock.Object);
+        Result<ImmutableArray<string>> result = await sut.GetTestSsns("19900101", 1, 0, TestContext.Current.CancellationToken);
 
-        ImmutableArray<string> result = await sut.GetTestSsns("19900101", 1, 0);
-
-        Assert.Single(result);
+        Assert.Single(result.Value);
     }
 
     [Fact]
     public async Task ReturnEmpty()
     {
         // Din JSON som du vill returnera
-        var json = "{\"ResultCount\":1,\"Offset\":0,\"Limit\":1,\"QueryTime\":100,\"Next\":\"\",\"Results\":[]}";
+        const string json = "{\"ResultCount\":1,\"Offset\":0,\"Limit\":1,\"QueryTime\":100,\"Next\":\"\",\"Results\":[]}";
 
         // Mocka HttpMessageHandler
         var handlerMock = new Mock<HttpMessageHandler>();
@@ -68,21 +62,15 @@ public class ClientTests
         // Skapa HttpClient med mockad handler
         var httpClient = new HttpClient(handlerMock.Object);
 
-        // Mocka IHttpClientFactory
-        var httpClientFactoryMock = new Mock<IHttpClientFactory>();
-        httpClientFactoryMock
-            .Setup(f => f.CreateClient(It.IsAny<string>()))
-            .Returns(httpClient);
+        var sut = new TestSsnClient(httpClient);
 
-        var sut = new Client(httpClientFactoryMock.Object);
+        Result<ImmutableArray<string>> result = await sut.GetTestSsns("19900101", 1, 0, TestContext.Current.CancellationToken);
 
-        ImmutableArray<string> result = await sut.GetTestSsns("19900101", 1, 0);
-
-        Assert.Empty(result);
+        Assert.Empty(result.Value);
     }
 
     [Fact]
-    public async Task Throws_OnNonSuccessStatusCode()
+    public async Task ReturnsFailure_OnNonSuccessStatusCode()
     {
         // Mocka HttpMessageHandler för att returnera 404
         var handlerMock = new Mock<HttpMessageHandler>();
@@ -101,17 +89,14 @@ public class ClientTests
 
         var httpClient = new HttpClient(handlerMock.Object);
 
-        var httpClientFactoryMock = new Mock<IHttpClientFactory>();
-        httpClientFactoryMock
-            .Setup(f => f.CreateClient(It.IsAny<string>()))
-            .Returns(httpClient);
+        var sut = new TestSsnClient(httpClient);
+        var result = await sut.GetTestSsns("19900101", 1, 0, TestContext.Current.CancellationToken);
 
-        var sut = new Client(httpClientFactoryMock.Object);
-        await Assert.ThrowsAsync<HttpRequestException>(async () => await sut.GetTestSsns("19900101", 1, 0));
+        Assert.False(result.IsSuccess);
     }
 
     [Fact]
-    public async Task ThrowsTaskCanceledException_OnTimeout()
+    public async Task ReturnsFailure_OnTimeout()
     {
         var handlerMock = new Mock<HttpMessageHandler>();
         handlerMock.Protected()
@@ -122,16 +107,16 @@ public class ClientTests
             .ThrowsAsync(new TaskCanceledException("Timeout"));
 
         var httpClient = new HttpClient(handlerMock.Object);
-        var httpClientFactoryMock = new Mock<IHttpClientFactory>();
-        httpClientFactoryMock.Setup(f => f.CreateClient(It.IsAny<string>())).Returns(httpClient);
 
-        var sut = new Client(httpClientFactoryMock.Object);
+        var sut = new TestSsnClient(httpClient);
 
-        await Assert.ThrowsAsync<TaskCanceledException>(() => sut.GetTestSsns("19900101", 1, 0));
+        var result = await sut.GetTestSsns("19900101", 1, 0, TestContext.Current.CancellationToken);
+
+        Assert.False(result.IsSuccess);
     }
 
     [Fact]
-    public async Task ThrowsJsonException_OnInvalidJson()
+    public async Task ReturnsFailure_OnInvalidJson()
     {
         var handlerMock = new Mock<HttpMessageHandler>();
         handlerMock.Protected()
@@ -146,11 +131,11 @@ public class ClientTests
             });
 
         var httpClient = new HttpClient(handlerMock.Object);
-        var httpClientFactoryMock = new Mock<IHttpClientFactory>();
-        httpClientFactoryMock.Setup(f => f.CreateClient(It.IsAny<string>())).Returns(httpClient);
 
-        var sut = new Client(httpClientFactoryMock.Object);
+        var sut = new TestSsnClient(httpClient);
 
-        await Assert.ThrowsAsync<System.Text.Json.JsonException>(() => sut.GetTestSsns("19900101", 1, 0));
+        var result = await sut.GetTestSsns("19900101", 1, 0, TestContext.Current.CancellationToken);
+
+        Assert.False(result.IsSuccess);
     }
 }

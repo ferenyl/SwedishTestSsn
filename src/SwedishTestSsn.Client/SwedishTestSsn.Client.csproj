@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageOutputPath>./nupkg</PackageOutputPath>
+    <Authors>Ferenyl</Authors>
+    <Title>SwedishTestSsn.Client: Swedish test social security numbers</Title>
+    <RepositoryUrl>https://github.com/ferenyl/SwedishTestSsn.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>Swedish test social security numbers; Skatteverket; The Swedish Tax Agency</PackageTags>
+    <PackageReleaseNotes>https://github.com/ferenyl/SwedishTestSsn/releases</PackageReleaseNotes>
+    <PackageId>$(AssemblyName)</PackageId>
+    <Description>Client for getting Swedish social security numbers for testing from Skatteverket's public API. They are not used for any real person.</Description>
+    <PackageProjectUrl>https://github.com/ferenyl/SwedishTestSsn</PackageProjectUrl>
+    <AssemblyVersion>0.1.0</AssemblyVersion>
+    <FileVersion>$(AssemblyVersion)</FileVersion>
+    <Version>$(AssemblyVersion)</Version>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../LICENSE" Pack="true" PackagePath="" />
+    <None Include="../../README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.13" />
+  </ItemGroup>
+
+</Project>
