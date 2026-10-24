@@ -4,36 +4,11 @@ using System.Text.Json;
 
 namespace SwedishTestSsn.Client;
 
+/// <summary>
+/// Client for Skatteverket's public API with Swedish test social security numbers.
+/// </summary>
 public interface ITestSsnClient
 {
-    Task<Result<ImmutableArray<string>>> GetTestSsns(string pattern, int limit, int offset, CancellationToken cancellationToken = default);
-}
-
-public class TestSsnClient : ITestSsnClient
-{
-    private const string BaseAddress = "https://skatteverket.entryscape.net/rowstore/dataset/b4de7df7-63c0-4e7e-bb59-1f156a591763";
-
-    private readonly HttpClient _httpClient;
-    private readonly JsonSerializerOptions _jsonDeserializeSettings = new()
-    {
-        PropertyNameCaseInsensitive = true
-    };
-
-    public TestSsnClient(HttpClient httpClient)
-    {
-        _httpClient = httpClient;
-    }
-
-    /// <summary>
-    /// Configures an <see cref="HttpClient"/> with the JSON accept header expected by Skatteverket.
-    /// </summary>
-    public static void Configure(HttpClient httpClient)
-    {
-        httpClient.DefaultRequestHeaders.Accept.Clear();
-        httpClient.DefaultRequestHeaders.Accept.Add(
-            new MediaTypeWithQualityHeaderValue("application/json"));
-    }
-
     /// <summary>
     /// Retrieves a collection of test Social Security Numbers (SSNs) based on the specified pattern, limit, and offset.
     /// </summary>
@@ -46,10 +21,47 @@ public class TestSsnClient : ITestSsnClient
     /// or a failed result if the request fails, times out or the response cannot be deserialized.
     /// </returns>
     /// <exception cref="OperationCanceledException">Thrown when <paramref name="cancellationToken"/> is canceled.</exception>
+    Task<Result<ImmutableArray<string>>> GetTestSsns(string pattern, int limit, int offset, CancellationToken cancellationToken = default);
+}
+
+/// <summary>
+/// Default <see cref="ITestSsnClient"/> implementation using <see cref="HttpClient"/>.
+/// </summary>
+public class TestSsnClient : ITestSsnClient
+{
+    private const string BaseAddress = "https://skatteverket.entryscape.net/rowstore/dataset/b4de7df7-63c0-4e7e-bb59-1f156a591763";
+
+    private readonly HttpClient _httpClient;
+    private readonly JsonSerializerOptions _jsonDeserializeSettings = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
+
+    /// <summary>
+    /// Creates a client using the given <see cref="HttpClient"/>. Call <see cref="Configure"/> on it unless it is registered via DI.
+    /// </summary>
+    /// <param name="httpClient">The HTTP client used for requests.</param>
+    public TestSsnClient(HttpClient httpClient)
+    {
+        _httpClient = httpClient;
+    }
+
+    /// <summary>
+    /// Configures an <see cref="HttpClient"/> with the JSON accept header expected by Skatteverket.
+    /// </summary>
+    /// <param name="httpClient">The HTTP client to configure.</param>
+    public static void Configure(HttpClient httpClient)
+    {
+        httpClient.DefaultRequestHeaders.Accept.Clear();
+        httpClient.DefaultRequestHeaders.Accept.Add(
+            new MediaTypeWithQualityHeaderValue("application/json"));
+    }
+
+    /// <inheritdoc />
     public async Task<Result<ImmutableArray<string>>> GetTestSsns(string pattern, int limit, int offset, CancellationToken cancellationToken = default)
     {
         var url =
-                $"{BaseAddress}" +
+                BaseAddress +
                 $"?testpersonnummer={Uri.EscapeDataString(pattern)}" +
                 $"&_limit={limit}" +
                 $"&_offset={offset}";
@@ -64,7 +76,7 @@ public class TestSsnClient : ITestSsnClient
             }
 
             return Result<ImmutableArray<string>>.Success(
-                data.Value.Results.Select(ssn => ssn.Testpersonnummer).ToImmutableArray());
+                [.. data.Value.Results.Select(ssn => ssn.Testpersonnummer)]);
         }
         catch (HttpRequestException ex)
         {

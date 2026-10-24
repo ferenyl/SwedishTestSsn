@@ -1,7 +1,6 @@
 using Spectre.Console.Cli;
 using Spectre.Console;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Collections.Immutable;
 using SwedishTestSsn.Client;
@@ -11,7 +10,7 @@ namespace SwedishTestSsn;
 internal sealed class TestSsnCommand : AsyncCommand<TestSsnCommand.Settings>
 {
     private readonly JsonSerializerOptions _jsonSerializeSettings;
-    private readonly ITestSsnClient _ssnClient;
+    private readonly TestSsnClient _ssnClient;
 
     public sealed class Settings : CommandSettings
     {
@@ -26,15 +25,15 @@ internal sealed class TestSsnCommand : AsyncCommand<TestSsnCommand.Settings>
 
         [CommandOption("-o|--offset")]
         [DefaultValue(0)]
-        public int Offset { get; init; } = 0;
+        public int Offset { get; init; }
 
         [Description("output as json")]
         [DefaultValue(false)]
         [CommandOption("--json")]
-        public bool Json { get; init; } = false;
+        public bool Json { get; init; }
     }
 
-    public TestSsnCommand() : base()
+    public TestSsnCommand()
     {
         _jsonSerializeSettings = new JsonSerializerOptions
         {

@@ -11,7 +11,7 @@ public class TestSsnClientTests
     public async Task ReturnSingle()
     {
         // Din JSON som du vill returnera
-        var json = "{\"ResultCount\":1,\"Offset\":0,\"Limit\":1,\"QueryTime\":100,\"Next\":\"\",\"Results\":[{\"Testpersonnummer\":\"199001011234\"}]}";
+        const string json = "{\"ResultCount\":1,\"Offset\":0,\"Limit\":1,\"QueryTime\":100,\"Next\":\"\",\"Results\":[{\"Testpersonnummer\":\"199001011234\"}]}";
 
         // Mocka HttpMessageHandler
         var handlerMock = new Mock<HttpMessageHandler>();
@@ -33,7 +33,7 @@ public class TestSsnClientTests
 
         var sut = new TestSsnClient(httpClient);
 
-        Result<ImmutableArray<string>> result = await sut.GetTestSsns("19900101", 1, 0);
+        Result<ImmutableArray<string>> result = await sut.GetTestSsns("19900101", 1, 0, TestContext.Current.CancellationToken);
 
         Assert.Single(result.Value);
     }
@@ -42,7 +42,7 @@ public class TestSsnClientTests
     public async Task ReturnEmpty()
     {
         // Din JSON som du vill returnera
-        var json = "{\"ResultCount\":1,\"Offset\":0,\"Limit\":1,\"QueryTime\":100,\"Next\":\"\",\"Results\":[]}";
+        const string json = "{\"ResultCount\":1,\"Offset\":0,\"Limit\":1,\"QueryTime\":100,\"Next\":\"\",\"Results\":[]}";
 
         // Mocka HttpMessageHandler
         var handlerMock = new Mock<HttpMessageHandler>();
@@ -64,7 +64,7 @@ public class TestSsnClientTests
 
         var sut = new TestSsnClient(httpClient);
 
-        Result<ImmutableArray<string>> result = await sut.GetTestSsns("19900101", 1, 0);
+        Result<ImmutableArray<string>> result = await sut.GetTestSsns("19900101", 1, 0, TestContext.Current.CancellationToken);
 
         Assert.Empty(result.Value);
     }
@@ -90,7 +90,7 @@ public class TestSsnClientTests
         var httpClient = new HttpClient(handlerMock.Object);
 
         var sut = new TestSsnClient(httpClient);
-        var result = await sut.GetTestSsns("19900101", 1, 0);
+        var result = await sut.GetTestSsns("19900101", 1, 0, TestContext.Current.CancellationToken);
 
         Assert.False(result.IsSuccess);
     }
@@ -110,7 +110,7 @@ public class TestSsnClientTests
 
         var sut = new TestSsnClient(httpClient);
 
-        var result = await sut.GetTestSsns("19900101", 1, 0);
+        var result = await sut.GetTestSsns("19900101", 1, 0, TestContext.Current.CancellationToken);
 
         Assert.False(result.IsSuccess);
     }
@@ -134,7 +134,7 @@ public class TestSsnClientTests
 
         var sut = new TestSsnClient(httpClient);
 
-        var result = await sut.GetTestSsns("19900101", 1, 0);
+        var result = await sut.GetTestSsns("19900101", 1, 0, TestContext.Current.CancellationToken);
 
         Assert.False(result.IsSuccess);
     }

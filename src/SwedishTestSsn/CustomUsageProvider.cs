@@ -3,6 +3,8 @@ using Spectre.Console.Cli;
 using Spectre.Console.Cli.Help;
 using Spectre.Console.Rendering;
 
+namespace SwedishTestSsn;
+
 internal class CustomHelpProvider : HelpProvider
 {
     private readonly HelpProviderStyle? helperStyles;
@@ -15,13 +17,13 @@ internal class CustomHelpProvider : HelpProvider
 
     public override IEnumerable<IRenderable> GetHeader(ICommandModel model, ICommandInfo? command)
     {
-        return new[]
-        {
+        return
+        [
             new Text("--------------------------------------"), Text.NewLine,
             new Text("---        Swedish Test ssn        ---"), Text.NewLine,
             new Text("--------------------------------------"), Text.NewLine,
             Text.NewLine,
-        };
+        ];
     }
 
     public override IEnumerable<IRenderable> GetDescription(ICommandModel model, ICommandInfo? command)
